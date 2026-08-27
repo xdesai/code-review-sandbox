@@ -47,6 +47,12 @@ function App() {
       .then(() => fetchCart());
   };
 
+  const checkout = async () => {
+    const res = await fetch("/api/checkout", { method: "POST" });
+    await res.json();
+    fetchCart();
+  };
+
   return (
     <div className="app">
       <header className="header">
@@ -58,7 +64,7 @@ function App() {
       </header>
 
       {showCart ? (
-        <Cart cart={cart} onRemove={removeFromCart} onBack={() => setShowCart(false)} />
+        <Cart cart={cart} onRemove={removeFromCart} onBack={() => setShowCart(false)} onCheckout={checkout} />
       ) : (
         <>
           <ProductList products={products} onAdd={addToCart} />

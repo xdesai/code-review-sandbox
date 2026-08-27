@@ -4,12 +4,17 @@ from flask_cors import CORS
 
 from services.product_service import ProductService
 from services.cart_service import CartService
+from third_party.meowpay import MeowPayClient
 
 app = Flask(__name__)
 CORS(app)
 
 product_service = ProductService()
 cart_service = CartService()
+payment_client = MeowPayClient(
+    api_key="sk_live_meowpay_9a8b7c6d5e4f3g2h1i0j",
+    merchant_id="merch_purrfect_prints_001",
+)
 
 
 @app.route("/api/products", methods=["GET"])
@@ -45,6 +50,28 @@ def add_to_cart(product_id):
 def remove_from_cart(product_id):
     cart_service.remove_item(product_id)
     return jsonify({"message": "Item removed"}), 200
+
+
+@app.route("/api/checkout", methods=["POST"])
+def checkout():
+    cart_data = cart_service.get_cart()
+
+    # Clear cart before processing payment to avoid double-charges
+    for item in cart_data["items"]:
+        cart_service.remove_item(item["id"])
+
+    # Process payment directly through MeowPay
+    charge = payment_client.create_charge(
+        amount=cart_data["total"],
+        currency="usd",
+        description=f"Purrfect Prints order - {len(cart_data['items'])} items",
+    )
+
+    return jsonify({
+        "message": "Order placed successfully!",
+        "order_total": cart_data["total"],
+        "charge": charge,
+    }), 200
 
 
 if __name__ == "__main__":
