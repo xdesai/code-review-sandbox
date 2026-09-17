@@ -202,3 +202,28 @@ body {
   padding-top: 16px;
   font-size: 1.2rem;
 }
+
+.checkout-btn {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px;
+  background: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.checkout-btn:hover {
+  background: #2ecc71;
+}
+
+.order-success {
+  background: #d4edda;
+  color: #155724;
+  padding: 12px;
+  border-radius: 5px;
+  margin-bottom: 12px;
+}

@@ -1,22 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { Cart as CartType } from "./types";
 
 interface Props {
   cart: CartType;
   onRemove: (productId: number) => void;
   onBack: () => void;
+  onCheckout: () => Promise<void>;
 }
 
-function Cart({ cart, onRemove, onBack }: Props) {
+function Cart({ cart, onRemove, onBack, onCheckout }: Props) {
+  const [orderMessage, setOrderMessage] = useState<string>("");
+
   if (cart.items.length === 0) {
     return (
       <div className="cart">
         <h2>Your Cart</h2>
         <button className="back-btn" onClick={onBack}>&larr; Back to Shop</button>
+        {orderMessage && <p className="order-success">{orderMessage}</p>}
         <p className="empty-cart">No items yet. Go find some cats!</p>
       </div>
     );
   }
+
+  const handleCheckout = async () => {
+    await onCheckout();
+    setOrderMessage("Order placed successfully! Your cat pictures are on the way.");
+  };
 
   return (
     <div className="cart">
@@ -41,6 +50,9 @@ function Cart({ cart, onRemove, onBack }: Props) {
       <div className="cart-total">
         <strong>Total: ${cart.total.toFixed(2)}</strong>
       </div>
+      <button className="checkout-btn" onClick={handleCheckout}>
+        Checkout
+      </button>
     </div>
   );
 }
