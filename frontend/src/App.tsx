@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ProductList from "./ProductList";
 import Cart from "./Cart";
+import PriceFilter from "./PriceFilter";
 import { Product, Cart as CartType, PaginatedProducts } from "./types";
 import "./App.css";
 
 function App() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [displayProducts, setDisplayProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [cart, setCart] = useState<CartType>({ items: [], total: 0 });
@@ -16,6 +18,7 @@ function App() {
       .then((res) => res.json())
       .then((data: PaginatedProducts) => {
         setProducts(data.products);
+        setDisplayProducts(data.products);
         setPage(data.page);
         setTotalPages(data.total_pages);
       });
@@ -47,6 +50,10 @@ function App() {
       .then(() => fetchCart());
   };
 
+  const handleFilter = (filtered: Product[]) => {
+    setDisplayProducts(filtered);
+  };
+
   return (
     <div className="app">
       <header className="header">
@@ -61,7 +68,8 @@ function App() {
         <Cart cart={cart} onRemove={removeFromCart} onBack={() => setShowCart(false)} />
       ) : (
         <>
-          <ProductList products={products} onAdd={addToCart} />
+          <PriceFilter products={products} onFilter={handleFilter} />
+          <ProductList products={displayProducts} onAdd={addToCart} />
           <div className="pagination">
             <button
               disabled={page <= 1}
